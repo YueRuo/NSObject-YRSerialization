@@ -1,0 +1,314 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5F6005D1180445B100A4778C /* NSObject+YRSerializationCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6005D0180445B100A4778C /* NSObject+YRSerializationCategory.m */; };
+		5F6005D418044B2A00A4778C /* DemoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6005D318044B2A00A4778C /* DemoModel.m */; };
+		5F6005D718044B6F00A4778C /* DemoSubModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6005D618044B6F00A4778C /* DemoSubModel.m */; };
+		5FCE506A180445420092F7C2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FCE5069180445420092F7C2 /* UIKit.framework */; };
+		5FCE506C180445420092F7C2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FCE506B180445420092F7C2 /* Foundation.framework */; };
+		5FCE506E180445420092F7C2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FCE506D180445420092F7C2 /* CoreGraphics.framework */; };
+		5FCE5074180445420092F7C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5FCE5072180445420092F7C2 /* InfoPlist.strings */; };
+		5FCE5076180445420092F7C2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE5075180445420092F7C2 /* main.m */; };
+		5FCE507A180445420092F7C2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FCE5079180445420092F7C2 /* AppDelegate.m */; };
+		5FCE507C180445430092F7C2 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FCE507B180445430092F7C2 /* Default.png */; };
+		5FCE507E180445430092F7C2 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FCE507D180445430092F7C2 /* Default@2x.png */; };
+		5FCE5080180445430092F7C2 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FCE507F180445430092F7C2 /* Default-568h@2x.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5F6005CF180445B100A4778C /* NSObject+YRSerializationCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+YRSerializationCategory.h"; sourceTree = "<group>"; };
+		5F6005D0180445B100A4778C /* NSObject+YRSerializationCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+YRSerializationCategory.m"; sourceTree = "<group>"; };
+		5F6005D218044B2A00A4778C /* DemoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoModel.h; sourceTree = "<group>"; };
+		5F6005D318044B2A00A4778C /* DemoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoModel.m; sourceTree = "<group>"; };
+		5F6005D518044B6F00A4778C /* DemoSubModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoSubModel.h; sourceTree = "<group>"; };
+		5F6005D618044B6F00A4778C /* DemoSubModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoSubModel.m; sourceTree = "<group>"; };
+		5FCE5066180445420092F7C2 /* YRSerializationCategory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YRSerializationCategory.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FCE5069180445420092F7C2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		5FCE506B180445420092F7C2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5FCE506D180445420092F7C2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		5FCE5071180445420092F7C2 /* YRSerializationCategory-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "YRSerializationCategory-Info.plist"; sourceTree = "<group>"; };
+		5FCE5073180445420092F7C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5FCE5075180445420092F7C2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5FCE5077180445420092F7C2 /* YRSerializationCategory-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "YRSerializationCategory-Prefix.pch"; sourceTree = "<group>"; };
+		5FCE5078180445420092F7C2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		5FCE5079180445420092F7C2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		5FCE507B180445430092F7C2 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		5FCE507D180445430092F7C2 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		5FCE507F180445430092F7C2 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5FCE5063180445420092F7C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5FCE506A180445420092F7C2 /* UIKit.framework in Frameworks */,
+				5FCE506C180445420092F7C2 /* Foundation.framework in Frameworks */,
+				5FCE506E180445420092F7C2 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5F6005CE180445B100A4778C /* YRSerializationCategory */ = {
+			isa = PBXGroup;
+			children = (
+				5F6005CF180445B100A4778C /* NSObject+YRSerializationCategory.h */,
+				5F6005D0180445B100A4778C /* NSObject+YRSerializationCategory.m */,
+			);
+			path = YRSerializationCategory;
+			sourceTree = "<group>";
+		};
+		5FCE505D180445420092F7C2 = {
+			isa = PBXGroup;
+			children = (
+				5FCE506F180445420092F7C2 /* YRSerializationCategory */,
+				5FCE5068180445420092F7C2 /* Frameworks */,
+				5FCE5067180445420092F7C2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5FCE5067180445420092F7C2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5FCE5066180445420092F7C2 /* YRSerializationCategory.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5FCE5068180445420092F7C2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5FCE5069180445420092F7C2 /* UIKit.framework */,
+				5FCE506B180445420092F7C2 /* Foundation.framework */,
+				5FCE506D180445420092F7C2 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5FCE506F180445420092F7C2 /* YRSerializationCategory */ = {
+			isa = PBXGroup;
+			children = (
+				5F6005CE180445B100A4778C /* YRSerializationCategory */,
+				5FCE5078180445420092F7C2 /* AppDelegate.h */,
+				5FCE5079180445420092F7C2 /* AppDelegate.m */,
+				5F6005D218044B2A00A4778C /* DemoModel.h */,
+				5F6005D318044B2A00A4778C /* DemoModel.m */,
+				5F6005D518044B6F00A4778C /* DemoSubModel.h */,
+				5F6005D618044B6F00A4778C /* DemoSubModel.m */,
+				5FCE5070180445420092F7C2 /* Supporting Files */,
+			);
+			path = YRSerializationCategory;
+			sourceTree = "<group>";
+		};
+		5FCE5070180445420092F7C2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				5FCE5071180445420092F7C2 /* YRSerializationCategory-Info.plist */,
+				5FCE5072180445420092F7C2 /* InfoPlist.strings */,
+				5FCE5075180445420092F7C2 /* main.m */,
+				5FCE5077180445420092F7C2 /* YRSerializationCategory-Prefix.pch */,
+				5FCE507B180445430092F7C2 /* Default.png */,
+				5FCE507D180445430092F7C2 /* Default@2x.png */,
+				5FCE507F180445430092F7C2 /* Default-568h@2x.png */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5FCE5065180445420092F7C2 /* YRSerializationCategory */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5FCE5083180445430092F7C2 /* Build configuration list for PBXNativeTarget "YRSerializationCategory" */;
+			buildPhases = (
+				5FCE5062180445420092F7C2 /* Sources */,
+				5FCE5063180445420092F7C2 /* Frameworks */,
+				5FCE5064180445420092F7C2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = YRSerializationCategory;
+			productName = YRSerializationCategory;
+			productReference = 5FCE5066180445420092F7C2 /* YRSerializationCategory.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5FCE505E180445420092F7C2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "王晓宇";
+			};
+			buildConfigurationList = 5FCE5061180445420092F7C2 /* Build configuration list for PBXProject "YRSerializationCategory" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5FCE505D180445420092F7C2;
+			productRefGroup = 5FCE5067180445420092F7C2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5FCE5065180445420092F7C2 /* YRSerializationCategory */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5FCE5064180445420092F7C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5FCE5074180445420092F7C2 /* InfoPlist.strings in Resources */,
+				5FCE507C180445430092F7C2 /* Default.png in Resources */,
+				5FCE507E180445430092F7C2 /* Default@2x.png in Resources */,
+				5FCE5080180445430092F7C2 /* Default-568h@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5FCE5062180445420092F7C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F6005D718044B6F00A4778C /* DemoSubModel.m in Sources */,
+				5F6005D418044B2A00A4778C /* DemoModel.m in Sources */,
+				5F6005D1180445B100A4778C /* NSObject+YRSerializationCategory.m in Sources */,
+				5FCE5076180445420092F7C2 /* main.m in Sources */,
+				5FCE507A180445420092F7C2 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		5FCE5072180445420092F7C2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5FCE5073180445420092F7C2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		5FCE5081180445430092F7C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5FCE5082180445430092F7C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5FCE5084180445430092F7C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "YRSerializationCategory/YRSerializationCategory-Prefix.pch";
+				INFOPLIST_FILE = "YRSerializationCategory/YRSerializationCategory-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		5FCE5085180445430092F7C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "YRSerializationCategory/YRSerializationCategory-Prefix.pch";
+				INFOPLIST_FILE = "YRSerializationCategory/YRSerializationCategory-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5FCE5061180445420092F7C2 /* Build configuration list for PBXProject "YRSerializationCategory" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5FCE5081180445430092F7C2 /* Debug */,
+				5FCE5082180445430092F7C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5FCE5083180445430092F7C2 /* Build configuration list for PBXNativeTarget "YRSerializationCategory" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5FCE5084180445430092F7C2 /* Debug */,
+				5FCE5085180445430092F7C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5FCE505E180445420092F7C2 /* Project object */;
+}
