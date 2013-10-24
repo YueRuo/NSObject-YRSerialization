@@ -81,9 +81,12 @@
     if (!dictionary||![dictionary isKindOfClass:[NSDictionary class]]) {
         return false;
     }
+    return [self restorePropertiesFromDictionary:dictionary class:[self class]];
+}
+-(BOOL)restorePropertiesFromDictionary:(NSDictionary*)dictionary class:(Class)class{
     BOOL ret = false;
     unsigned int outCount;
-    objc_property_t *properties = class_copyPropertyList([self class], &outCount);
+    objc_property_t *properties = class_copyPropertyList(class, &outCount);
     for (int i = 0; i < outCount; i++) {
         objc_property_t property = properties[i];
         NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
@@ -123,8 +126,14 @@
         YRRelease(propertyName);
     }
     free(properties);
+    
+    Class superClass=class_getSuperclass(class);
+    if (superClass != [NSObject class]) {
+        [self restorePropertiesFromDictionary:dictionary class:superClass];
+    }
     return ret;
 }
+
 
 -(NSArray*)supPropertyRestoreFromArray:(NSArray*)propertyValue{
     NSMutableArray *subPropertyArray=[NSMutableArray arrayWithCapacity:[propertyValue count]];
