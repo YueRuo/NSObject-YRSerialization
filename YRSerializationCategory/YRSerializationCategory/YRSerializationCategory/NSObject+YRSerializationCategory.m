@@ -39,7 +39,7 @@
 
 -(NSDictionary*)savePropertiesToDictionary{
     if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
-//        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
+        //        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
         return nil;
     }
     NSArray *propertyKeys=[self propertyKeys];
