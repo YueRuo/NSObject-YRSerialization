@@ -37,7 +37,12 @@
     [demoSubModel setDemoSubString:@"this is demoSubModel"];
     [demoModel setDemoSubModel:demoSubModel];//set the custom class of DemoModel
     
+    DemoSubModel *demoSubModel2=[[DemoSubModel alloc]init];
+    [demoSubModel2 setDemoSubString:@"this is demoSubModel2 with id property"];
+    [demoModel setDemoSubModel2:demoSubModel2];//set the id property of DemoModel
+    
     NSDictionary *savedDicationary=[demoModel savePropertiesToDictionary];//easy to save
+    //see the console
     NSLog(@"-->>the savedDicationary=%@",savedDicationary);//you can use this dictionary to json or...
     //----------------------------
     //-end-- testSave

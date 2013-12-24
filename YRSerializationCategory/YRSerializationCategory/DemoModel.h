@@ -16,4 +16,5 @@
 @property (retain,nonatomic) NSDictionary *demoDictionary;
 @property (retain,nonatomic) DemoSubModel *demoSubModel;//another class
 
+@property (retain,nonatomic) id demoSubModel2;//another class with id property
 @end

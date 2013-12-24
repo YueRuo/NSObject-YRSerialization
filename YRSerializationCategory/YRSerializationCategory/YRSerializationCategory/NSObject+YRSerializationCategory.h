@@ -15,15 +15,46 @@
  *  in this class , I do not make the obj to json method, you can do it by yourself ,or use the famous third part library such as JSONKit ..
  *  ok , I hope you can enjoy the convenience made by this class.
  
- *  @note  Warning ! This class don't support the basic data type , such as NSString,NSValue,NSArray,NSDictionary,NSSet etc. In fact ,those class do not need use this category.
+ *  @note  Warning ! This class don't support the basic data type , such as NSString,NSValue,NSArray,NSDictionary,NSSet etc. In fact ,those class do not need use this category. And not support struct property!!
  */
 #import <Foundation/Foundation.h>
 
 
 @interface NSObject (YRSerializationCategory)
 
+/*!
+ *	@brief	abstract method，let you forbid some class use this category
+ *
+ *	@return	true means ok，false means can't support，default value is true
+ */
+-(BOOL)supportYRSerialization;
+
+
+/*!
+ *	@brief	all this class's perporties,normally,you do not need use it
+ *
+ *	@return	the array with class's perporties
+ */
 -(NSArray*)propertyKeys;
--(NSDictionary*)savePropertiesToDictionary;//This dictionary can purely be saved to the NSUserDefaults or to a json.
--(BOOL)restorePropertiesFromDictionary:(NSDictionary*)dictionary;//This method make to obj back from the dictionary you previous saved by the savePropertiesToDictionary method.
+
+
+/*!
+ *	@brief	make obj to dictionary,will check the class whether can support this category
+ *
+ *	@return	an dictionary,,this dictionary can purely be saved to the NSUserDefaults or to a json.
+ *  @note This class don't support the basic data type , such as NSString,NSValue,NSArray,NSDictionary,NSSet etc. , and not support struct property!
+ */
+-(NSDictionary*)savePropertiesToDictionary;
+
+/*!
+ *	@brief	This method make to obj back from the dictionary you previous saved by the savePropertiesToDictionary method.
+ *
+ *	@param 	dictionary 	the dictionary you previous saved by the savePropertiesToDictionary method
+ *
+ *	@return	true means success,false means failed
+ *  @note if return failed, you'd better not use the retored failed obj,may have unknown bug.
+ */
+-(BOOL)restorePropertiesFromDictionary:(NSDictionary*)dictionary;
+
 
 @end

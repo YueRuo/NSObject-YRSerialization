@@ -14,7 +14,14 @@
 #else
 #define YRRelease(__v)
 #endif
+
+#define YRPropertyClassName @"__yrname"
+
 @implementation NSObject (YRSerializationCategory)
+
+-(BOOL)supportYRSerialization{
+    return true;
+}
 
 -(NSArray*)propertyKeys{
     unsigned int outCount;
@@ -38,8 +45,12 @@
 }
 
 -(NSDictionary*)savePropertiesToDictionary{
+    if (![self supportYRSerialization]) {
+        NSAssert(false, @"YRSerializationCategory: the class %@ can't support the YRSerializationCategory ,because the developer of this class forbid it",[self class]);
+        return nil;
+    }
     if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
-        //        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
+//        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
         return nil;
     }
     NSArray *propertyKeys=[self propertyKeys];
@@ -53,12 +64,14 @@
             if ([propertyValue isKindOfClass:[NSArray class]]) {//if an array，check it
                 NSMutableArray *subPropertyArray=[NSMutableArray arrayWithCapacity:[propertyValue count]];
                 for (id obj in propertyValue) {
-                    if ([obj class]==[self class]) {//pass the loop property
-                        continue;
-                    }
+                    /*useless
+                     if ([obj class]==[self class]) {//pass the loop property
+                     continue;
+                     }
+                     //*/
                     id subPropertyArrayObj=[obj savePropertiesToDictionary];
                     if (subPropertyArrayObj) {
-                        [subPropertyArrayObj setObject:NSStringFromClass([obj class]) forKey:@"__yrname"];
+                        [subPropertyArrayObj setObject:NSStringFromClass([obj class]) forKey:YRPropertyClassName];
                         [subPropertyArray addObject:subPropertyArrayObj];
                     }else{
                         [subPropertyArray addObject:obj];
@@ -68,6 +81,7 @@
             }else{
                 id obj=[propertyValue savePropertiesToDictionary];
                 if (obj) {
+                    [obj setObject:NSStringFromClass([propertyValue class]) forKey:YRPropertyClassName];
                     [dictionary setObject:obj forKey:key];
                 }else{
                     [dictionary setObject:propertyValue forKey:key];
@@ -90,7 +104,6 @@
     for (int i = 0; i < outCount; i++) {
         objc_property_t property = properties[i];
         NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
-        
         if ([dictionary isKindOfClass:[NSDictionary class]]) {
             ret = ([dictionary valueForKey:propertyName]==nil)?false:true;
         }else{
@@ -101,17 +114,22 @@
             if (propertyValue&&![propertyValue isKindOfClass:[NSNull class]]) {
                 BOOL isSetDone=false;
                 if ([propertyValue isKindOfClass:[NSDictionary class]]) {
-                    NSString *propertyAttributes=[NSString stringWithCString:property_getAttributes(property) encoding:NSUTF8StringEncoding];
-                    NSArray *tempArray=[propertyAttributes componentsSeparatedByString:@"\""];
-                    if ([tempArray count]>1) {
-                        NSString *className=[tempArray objectAtIndex:1];
-                        if ([propertyAttributes rangeOfString:@"ictionary"].length==0) {//not a dictionary
-                            id subPropertyObj=[[NSClassFromString(className) alloc]init];
-                            [subPropertyObj restorePropertiesFromDictionary:propertyValue];
-                            [self setValue:subPropertyObj forKey:propertyName];
-                            YRRelease(subPropertyObj);
-                            isSetDone=true;
+                    NSString *className=[propertyValue objectForKey:YRPropertyClassName];
+                    if (!className) {
+                        NSString *propertyAttributes=[NSString stringWithCString:property_getAttributes(property) encoding:NSUTF8StringEncoding];
+                        NSArray *tempArray=[propertyAttributes componentsSeparatedByString:@"@\""];
+                        if ([tempArray count]>1) {
+                            if ([propertyAttributes rangeOfString:@"ictionary"].length==0) {//not a dictionary
+                                className=[tempArray objectAtIndex:1];
+                            }
                         }
+                    }
+                    if (className) {
+                        id subPropertyObj=[[NSClassFromString(className) alloc]init];
+                        [subPropertyObj restorePropertiesFromDictionary:propertyValue];
+                        [self setValue:subPropertyObj forKey:propertyName];
+                        YRRelease(subPropertyObj);
+                        isSetDone=true;
                     }
                 }else if([propertyValue isKindOfClass:[NSArray class]]){
                     NSArray *subPropertyArray=[self supPropertyRestoreFromArray:propertyValue];
@@ -126,10 +144,11 @@
         YRRelease(propertyName);
     }
     free(properties);
-    
-    Class superClass=class_getSuperclass(class);
-    if (superClass != [NSObject class]) {
-        [self restorePropertiesFromDictionary:dictionary class:superClass];
+    if (ret) {
+        Class superClass=class_getSuperclass(class);
+        if (superClass != [NSObject class]) {
+            ret=[self restorePropertiesFromDictionary:dictionary class:superClass];
+        }
     }
     return ret;
 }
@@ -140,7 +159,7 @@
     for (id obj in propertyValue) {
         BOOL isSubPropertySetDone=false;
         if ([obj isKindOfClass:[NSDictionary class]]) {//if it contains dictionary
-            NSString *subClassName=[obj objectForKey:@"__yrname"];
+            NSString *subClassName=[obj objectForKey:YRPropertyClassName];
             if (subClassName) {
                 id subPropertyObj=[[NSClassFromString(subClassName) alloc]init];
                 [subPropertyObj restorePropertiesFromDictionary:obj];
