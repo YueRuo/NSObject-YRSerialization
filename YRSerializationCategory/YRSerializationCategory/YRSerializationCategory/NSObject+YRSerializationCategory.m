@@ -15,80 +15,55 @@
 #define YRRelease(__v)
 #endif
 
-#define YRPropertyClassName @"__yrname"
+#define YRSerializationClassNamekey @"__yrcn"
+#define YRSerializationStructNamekey @"__yrsn"
+#define YRSerializationStructValuekey @"__yrsv"
+#define YRSerializationNSCodingKey  @"coder"
+
+static char *assoKeyProperty="__yrakp";
 
 @implementation NSObject (YRSerializationCategory)
+
 
 -(BOOL)supportYRSerialization{
     return true;
 }
 
 -(NSArray*)propertyKeys{
-    unsigned int outCount;
-    objc_property_t *properties = class_copyPropertyList([self class], &outCount);
-    NSMutableArray *propertyKeys = [NSMutableArray arrayWithCapacity:outCount];
-    for (int i = 0; i < outCount; i++) {
-        objc_property_t property = properties[i];
-        NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
-        [propertyKeys addObject:propertyName];
-        YRRelease(propertyName);
-    }
-    free(properties);
-    Class superClass=class_getSuperclass([self class]);
-    if (superClass != [NSObject class]) {
-        NSArray *superPropertyKeys=[superClass propertyKeys];
-        if (superPropertyKeys&&[superPropertyKeys count]>0) {
-            [propertyKeys addObjectsFromArray:superPropertyKeys];
+    NSArray *propertyKeysC = objc_getAssociatedObject([self class], assoKeyProperty);
+    if (!propertyKeysC) {
+        unsigned int outCount;
+        objc_property_t *properties = class_copyPropertyList([self class], &outCount);
+        NSMutableArray *propertyKeys = [NSMutableArray arrayWithCapacity:outCount];
+        for (int i = 0; i < outCount; i++) {
+            objc_property_t property = properties[i];
+            NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
+            [propertyKeys addObject:propertyName];
+            YRRelease(propertyName);
         }
-    }
-    return propertyKeys;
-}
-
--(NSDictionary*)savePropertiesToDictionary{
-    if (![self supportYRSerialization]) {
-        NSAssert(false, @"YRSerializationCategory: the class %@ can't support the YRSerializationCategory ,because the developer of this class forbid it",[self class]);
-        return nil;
-    }
-    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
-//        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
-        return nil;
-    }
-    NSArray *propertyKeys=[self propertyKeys];
-    if ([propertyKeys count]==0) {
-        return nil;
-    }
-    NSMutableDictionary *dictionary=[NSMutableDictionary dictionaryWithCapacity:[propertyKeys count]];
-    for (NSString *key in propertyKeys) {
-        id propertyValue = [self valueForKey:key];
-        if (propertyValue&&![propertyValue isKindOfClass:[NSNull class]]) {
-            if ([propertyValue isKindOfClass:[NSArray class]]) {//if an array，check it
-                NSMutableArray *subPropertyArray=[NSMutableArray arrayWithCapacity:[propertyValue count]];
-                for (id obj in propertyValue) {
-                    /*useless
-                     if ([obj class]==[self class]) {//pass the loop property
-                     continue;
-                     }
-                     //*/
-                    id subPropertyArrayObj=[obj savePropertiesToDictionary];
-                    if (subPropertyArrayObj) {
-                        [subPropertyArrayObj setObject:NSStringFromClass([obj class]) forKey:YRPropertyClassName];
-                        [subPropertyArray addObject:subPropertyArrayObj];
-                    }else{
-                        [subPropertyArray addObject:obj];
-                    }
-                }
-                [dictionary setObject:subPropertyArray forKey:key];
-            }else{
-                id obj=[propertyValue savePropertiesToDictionary];
-                if (obj) {
-                    [obj setObject:NSStringFromClass([propertyValue class]) forKey:YRPropertyClassName];
-                    [dictionary setObject:obj forKey:key];
-                }else{
-                    [dictionary setObject:propertyValue forKey:key];
-                }
+        free(properties);
+        Class superClass=class_getSuperclass([self class]);
+        if (superClass != [NSObject class]) {
+            NSArray *superPropertyKeys=[superClass propertyKeys];
+            if (superPropertyKeys&&[superPropertyKeys count]>0) {
+                [propertyKeys addObjectsFromArray:superPropertyKeys];
             }
         }
+        propertyKeysC=[NSArray arrayWithArray:propertyKeys];
+        objc_setAssociatedObject([self class], assoKeyProperty, propertyKeysC, OBJC_ASSOCIATION_RETAIN);
     }
+    return propertyKeysC;
+}
+-(NSMutableDictionary*)savePropertiesToDictionary{
+    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
+        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
+        return nil;
+    }
+    return [self objectToSafeSave:self];
+}
+-(NSMutableDictionary*)savePropertiesWithoutAuxiliaryClassName{
+    NSMutableDictionary *dictionary=[self savePropertiesToDictionary];
+    [dictionary removeAllAuxiliaryYRClassName];
     return dictionary;
 }
 -(BOOL)restorePropertiesFromDictionary:(NSDictionary*)dictionary{
@@ -97,86 +72,289 @@
     }
     return [self restorePropertiesFromDictionary:dictionary class:[self class]];
 }
+-(NSDictionary *)propertyKeysToSaveKeys{
+    return nil;//default return nil
+}
+
+
+
+#pragma NSCoding
+-(void)encodeWithCoder:(NSCoder *)aCoder{
+    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
+        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
+    }
+    NSDictionary *dictionary=[self savePropertiesToDictionary];
+    if (dictionary) {
+        [aCoder encodeObject:dictionary forKey:YRSerializationNSCodingKey];
+    }
+}
+-(id)initWithCoder:(NSCoder *)aDecoder{
+    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
+        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
+    }
+    NSDictionary *dictionary=[aDecoder decodeObjectForKey:YRSerializationNSCodingKey];
+    [self restorePropertiesFromDictionary:dictionary];
+    return self;
+}
+
+
+
+#pragma mark transfer
+-(id)objectToSafeSave:(id)object{
+    if (![self supportYRSerialization]) {
+#if DEBUG
+        NSAssert(false, @"YRSerializationCategory: the class %@ can't support the YRSerializationCategory ,because the developer of this class forbid it",[self class]);
+#endif
+        return nil;
+    }
+
+    id resultObj=nil;
+    if ([object isKindOfClass:[NSArray class]]) {
+        resultObj=[self saveObjectsFromArray:object];
+    }else if ([object isKindOfClass:[NSDictionary class]]){
+        resultObj=[self saveObjectsFromDictionary:object];
+    }else if ([object isKindOfClass:[NSSet class]]){
+        resultObj=[self saveObjectsFromSet:object];
+    }else if ([object isKindOfClass:[NSString class]]){
+        resultObj=object;
+    }else if ([object isKindOfClass:[NSValue class]]){
+        resultObj=[self saveObjectsFromValue:object];
+    }else if ([object isKindOfClass:[NSNull class]]){
+        resultObj=object;
+    }else{
+        resultObj=[object saveObjectPropertiesToDictionary];
+    }
+    return resultObj;
+}
+
+-(id)objectToSafeRestore:(id)object{
+    id resultObj=nil;
+    if ([object isKindOfClass:[NSArray class]]) {
+        resultObj=[self restoreObjectsFromArray:object];
+    }else if ([object isKindOfClass:[NSDictionary class]]){
+        resultObj=[self restoreObjectsFromDictionary:object];
+    }else if ([object isKindOfClass:[NSSet class]]){
+        resultObj=[self restoreObjectsFromSet:object];
+    }else if ([object isKindOfClass:[NSString class]]){
+        resultObj=object;
+    }else if ([object isKindOfClass:[NSValue class]]){
+        resultObj=object;
+    }else if ([object isKindOfClass:[NSNull class]]){
+        resultObj=object;
+    }else{
+        resultObj=object;
+    }
+    return resultObj;
+}
+
+-(id)saveObjectToSafeStore{
+    return [self objectToSafeSave:self];
+}
+
+-(id)restoreObjectFromSafeSave:(id)savedObj{
+    return [self objectToSafeRestore:savedObj];
+}
+
+-(NSMutableArray*)saveObjectsFromArray:(NSArray*)array{
+    if (array&&[array isKindOfClass:[NSArray class]]) {
+        NSMutableArray *resultArray=[NSMutableArray arrayWithCapacity:[array count]];
+        for (id obj in array) {
+            id safeObj=[self objectToSafeSave:obj];
+            if (safeObj) {
+                [resultArray addObject:safeObj];
+            }
+        }
+        return resultArray;
+    }
+    return nil;
+}
+
+-(NSMutableDictionary *)saveObjectsFromDictionary:(NSDictionary*)dictionary{
+    if (dictionary&&[dictionary isKindOfClass:[NSDictionary class]]) {
+        __block NSMutableDictionary *resultDictionary=[NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
+        [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            [resultDictionary setObject:[self objectToSafeSave:obj] forKey:key];
+        }];
+        return resultDictionary;
+    }
+    return nil;
+}
+-(NSSet *)saveObjectsFromSet:(NSSet*)set{
+    if (set&&[set isKindOfClass:[NSSet class]]) {
+        NSMutableSet *resultSet=[NSMutableSet setWithCapacity:[set count]];
+        for (id obj in set) {
+            id safeObj=[self objectToSafeSave:obj];
+            if (safeObj) {
+                [resultSet addObject:safeObj];
+            }
+        }
+        return resultSet;
+    }
+    return nil;
+}
+-(id)saveObjectsFromValue:(NSValue*)value{
+    if (value&&[value isKindOfClass:[NSValue class]]) {
+        NSString *objcTypeString=[NSString stringWithCString:[value objCType] encoding:NSUTF8StringEncoding];
+        if ([objcTypeString length]==1) {//系统能直接识别
+            return value;
+        }else{//复杂且麻烦的结构体
+            NSString *resultString=[value description];
+            if (!resultString||[resultString hasPrefix:@"<"]) {
+                NSLog(@"--->>warning! find a unknow struct to save! ignored this value ,value=%@",value);
+                return nil;
+            }
+            return @{YRSerializationStructNamekey:@1,YRSerializationStructValuekey:resultString};
+        }
+        
+    }
+    return value;
+}
+-(NSMutableDictionary*)saveObjectPropertiesToDictionary{
+    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
+#if DEBUG
+        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
+#endif
+        return nil;
+    }
+    NSArray *propertyKeys=[self propertyKeys];
+    if ([propertyKeys count]==0) {
+        return nil;
+    }
+    NSMutableDictionary *dictionary=[NSMutableDictionary dictionaryWithCapacity:[propertyKeys count]];
+    [dictionary setObject:NSStringFromClass([self class]) forKey:YRSerializationClassNamekey];
+    NSDictionary *propertyKeysToSaveKeys=[self propertyKeysToSaveKeys];
+    for (NSString *key in propertyKeys) {
+        NSString *saveKey=key;
+        if (propertyKeysToSaveKeys) {
+            saveKey=[propertyKeysToSaveKeys objectForKey:key];
+            if (!saveKey) {
+                continue;
+            }
+        }
+        
+        id propertyValue = [self valueForKey:key];
+        if (propertyValue) {
+            id propertyValueObj=[self objectToSafeSave:propertyValue];
+            if (propertyValueObj) {
+                [dictionary setObject:propertyValueObj forKey:saveKey];
+            }
+        }
+    }
+    return dictionary;
+}
+
+
+-(NSMutableArray*)restoreObjectsFromArray:(NSArray*)array{
+    NSMutableArray *resultArray=[NSMutableArray arrayWithCapacity:[array count]];
+    for (id obj in array) {
+        id safeObj=[self objectToSafeRestore:obj];
+        if (safeObj) {
+            [resultArray addObject:safeObj];
+        }
+    }
+    return resultArray;
+}
+-(NSMutableSet*)restoreObjectsFromSet:(NSSet*)set{
+    NSMutableSet *resultSet=[NSMutableSet setWithCapacity:[set count]];
+    for (id obj in set) {
+        id safeObj=[self objectToSafeRestore:obj];
+        if (safeObj) {
+            [resultSet addObject:safeObj];
+        }
+    }
+    return resultSet;
+}
+-(NSValue*)restoreObjectsFromValueDescriptionString:(NSString*)valueDescription{
+    NSValue *value=nil;
+    if ([valueDescription hasPrefix:@"NSPoint"]) {
+        value=[NSValue valueWithCGPoint:CGPointFromString(valueDescription)];
+    }else if ([valueDescription hasPrefix:@"NSRect"]){
+        value=[NSValue valueWithCGRect:CGRectFromString(valueDescription)];
+    }else if ([valueDescription hasPrefix:@"NSSize"]){
+        value=[NSValue valueWithCGSize:CGSizeFromString(valueDescription)];
+    }else if ([valueDescription hasPrefix:@"CGAffineTransform"]){
+        value=[NSValue valueWithCGAffineTransform:CGAffineTransformFromString(valueDescription)];
+    }else if ([valueDescription hasPrefix:@"UIEdgeInsets"]){
+        value=[NSValue valueWithUIEdgeInsets:UIEdgeInsetsFromString(valueDescription)];
+    }else if ([valueDescription hasPrefix:@"UIOffset"]){
+        value=[NSValue valueWithUIOffset:UIOffsetFromString(valueDescription)];
+    }else{
+        NSLog(@"--->>warning! find a unknow struct to restore!,value=%@",value);
+    }
+    return value;
+}
+
+-(id)restoreObjectsFromDictionary:(NSDictionary *)dictionary{
+    if (!dictionary||![dictionary isKindOfClass:[NSDictionary class]]) {
+        return false;
+    }
+    NSString *subClassName=[dictionary objectForKey:YRSerializationClassNamekey];
+    if (subClassName) {
+        Class className=NSClassFromString(subClassName);
+        id classObj=[[className alloc]init];
+        [classObj restorePropertiesFromDictionary:dictionary class:className];
+        return classObj;
+    }else{
+        NSString *structName=[dictionary objectForKey:YRSerializationStructNamekey];
+        if (structName) {
+            return [self restoreObjectsFromValueDescriptionString:[dictionary objectForKey:YRSerializationStructValuekey]];
+        }else{
+            __block NSMutableDictionary *resultDictionary=[NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
+            [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                [resultDictionary setObject:[self objectToSafeRestore:obj] forKey:key];
+            }];
+            return resultDictionary;
+        }
+    }
+    return nil;
+}
 -(BOOL)restorePropertiesFromDictionary:(NSDictionary*)dictionary class:(Class)class{
+    if (![self supportYRSerialization]) {
+#if DEBUG
+        NSAssert(false, @"YRSerializationCategory: the class %@ can't support the YRSerializationCategory ,because the developer of this class forbid it",[self class]);
+#endif
+        return false;
+    }
+    if (!dictionary||![dictionary isKindOfClass:[NSDictionary class]]) {
+        return false;
+    }
+    NSDictionary *propertyKeysToSaveKeys=[self propertyKeysToSaveKeys];
     BOOL ret = false;
     unsigned int outCount;
     objc_property_t *properties = class_copyPropertyList(class, &outCount);
     for (int i = 0; i < outCount; i++) {
         objc_property_t property = properties[i];
         NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
+        NSString *saveKey=propertyName;
+        if (propertyKeysToSaveKeys) {
+            saveKey=[propertyKeysToSaveKeys objectForKey:propertyName];
+            if (!saveKey) {
+                continue;
+            }
+        }
         if ([dictionary isKindOfClass:[NSDictionary class]]) {
-            ret = ([dictionary valueForKey:propertyName]==nil)?false:true;
+            ret = ([dictionary valueForKey:saveKey]==nil)?false:true;
         }else{
-            ret = [dictionary respondsToSelector:NSSelectorFromString(propertyName)];
+            ret = [dictionary respondsToSelector:NSSelectorFromString(saveKey)];
         }
         if (ret) {
-            id propertyValue = [dictionary valueForKey:propertyName];
-            if (propertyValue&&![propertyValue isKindOfClass:[NSNull class]]) {
-                BOOL isSetDone=false;
-                if ([propertyValue isKindOfClass:[NSDictionary class]]) {
-                    NSString *className=[propertyValue objectForKey:YRPropertyClassName];
-                    if (!className) {
-                        NSString *propertyAttributes=[NSString stringWithCString:property_getAttributes(property) encoding:NSUTF8StringEncoding];
-                        NSArray *tempArray=[propertyAttributes componentsSeparatedByString:@"@\""];
-                        if ([tempArray count]>1) {
-                            if ([propertyAttributes rangeOfString:@"ictionary"].length==0) {//not a dictionary
-                                className=[tempArray objectAtIndex:1];
-                            }
-                        }
-                    }
-                    if (className) {
-                        id subPropertyObj=[[NSClassFromString(className) alloc]init];
-                        [subPropertyObj restorePropertiesFromDictionary:propertyValue];
-                        [self setValue:subPropertyObj forKey:propertyName];
-                        YRRelease(subPropertyObj);
-                        isSetDone=true;
-                    }
-                }else if([propertyValue isKindOfClass:[NSArray class]]){
-                    NSArray *subPropertyArray=[self supPropertyRestoreFromArray:propertyValue];
-                    [self setValue:subPropertyArray forKey:propertyName];
-                    isSetDone=true;
-                }
-                if (!isSetDone) {
-                    [self setValue:propertyValue forKey:propertyName];
+            id propertyValue = [dictionary valueForKey:saveKey];
+            if (propertyValue) {
+                id safeObj=[self objectToSafeRestore:propertyValue];
+                if (safeObj) {
+                    [self setValue:safeObj forKey:propertyName];
                 }
             }
         }
         YRRelease(propertyName);
     }
     free(properties);
-    if (ret) {
-        Class superClass=class_getSuperclass(class);
-        if (superClass != [NSObject class]) {
-            ret=[self restorePropertiesFromDictionary:dictionary class:superClass];
-        }
+    
+    Class superClass=class_getSuperclass(class);
+    if (superClass != [NSObject class]) {
+        [self restorePropertiesFromDictionary:dictionary class:superClass];
     }
     return ret;
-}
-
-
--(NSArray*)supPropertyRestoreFromArray:(NSArray*)propertyValue{
-    NSMutableArray *subPropertyArray=[NSMutableArray arrayWithCapacity:[propertyValue count]];
-    for (id obj in propertyValue) {
-        BOOL isSubPropertySetDone=false;
-        if ([obj isKindOfClass:[NSDictionary class]]) {//if it contains dictionary
-            NSString *subClassName=[obj objectForKey:YRPropertyClassName];
-            if (subClassName) {
-                id subPropertyObj=[[NSClassFromString(subClassName) alloc]init];
-                [subPropertyObj restorePropertiesFromDictionary:obj];
-                [subPropertyArray addObject:subPropertyObj];
-                YRRelease(subPropertyObj);
-                isSubPropertySetDone=true;
-            }
-        }else if ([obj isKindOfClass:[NSArray class]]){
-            NSArray *nextSubPropertyArrayObj=[self supPropertyRestoreFromArray:obj];
-            [subPropertyArray addObject:nextSubPropertyArrayObj];
-            isSubPropertySetDone=true;
-        }
-        if (!isSubPropertySetDone) {
-            [subPropertyArray addObject:obj];
-        }
-    }
-    return subPropertyArray;
 }
 
 -(id)valueForUndefinedKey:(NSString *)key{
@@ -187,4 +365,82 @@
     NSLog(@"-->>try to set undefinekey %@ value %@ to %@",key,value,self);
 }
 
+@end
+
+
+@implementation NSArray (YRSerializationCategory)
+-(NSMutableArray*)saveObjectsToArray{
+    if (self&&[self isKindOfClass:[NSArray class]]) {
+        return [super saveObjectsFromArray:self];
+    }
+    return nil;
+}
+-(NSMutableArray*)restoreObjectsFromArray{
+    if (self&&[self isKindOfClass:[NSArray class]]) {
+        return [super restoreObjectsFromArray:self];
+    }
+    return nil;
+}
+@end
+
+@implementation NSDictionary (YRSerializationCategory)
+-(void)removeAllAuxiliaryYRClassName{
+    if (self&&[self isKindOfClass:[NSMutableDictionary class]]) {
+        [(NSMutableDictionary*)self removeObjectForKey:YRSerializationClassNamekey];
+        NSArray *allKeys=[self allKeys];
+        for (NSInteger i=allKeys.count-1; i>=0; i--) {
+            id obj=[self objectForKey:allKeys[i]];
+            if ([obj isKindOfClass:[NSDictionary class]]) {
+                [obj removeAllAuxiliaryYRClassName];
+            }
+        }
+    }
+}
+
+-(NSMutableDictionary*)saveObjectsToDictionary{
+    if (self&&[self isKindOfClass:[NSDictionary class]]) {
+        return [super saveObjectsFromDictionary:self];
+    }
+    return nil;
+}
+-(NSMutableDictionary*)restoreObjectsFromDictionary{
+    if (self&&[self isKindOfClass:[NSDictionary class]]) {
+        return [super restoreObjectsFromDictionary:self];
+    }
+    return nil;
+}
+@end
+
+@implementation NSSet (YRSerializationCategory)
+-(NSMutableSet*)saveObjectsToSet{
+    if (self&&[self isKindOfClass:[NSSet class]]) {
+        return [super saveObjectToSafeStore];
+    }
+    return nil;
+}
+-(NSMutableSet*)restoreObjectsFromSet{
+    if (self&&[self isKindOfClass:[NSSet class]]) {
+        return [super restoreObjectsFromSet:self];
+    }
+    return nil;
+}
+@end
+
+@implementation NSValue (YRSerializationCategory)
+-(id)saveObjectToSafeStore{
+    if (self&&[self isKindOfClass:[NSValue class]]) {
+        return [super saveObjectsFromValue:self];
+    }
+    return nil;
+}
+-(NSValue *)restoreObjectFromSafeSave:(id)savedObj{
+    id restoreObj=[super restoreObjectFromSafeSave:savedObj];
+    if ([restoreObj isKindOfClass:[NSValue class]]) {
+        return restoreObj;
+    }
+    return nil;
+}
++(NSValue *)valueWithDescriptionString:(NSString*)description{
+    return [super restoreObjectsFromValueDescriptionString:description];
+}
 @end

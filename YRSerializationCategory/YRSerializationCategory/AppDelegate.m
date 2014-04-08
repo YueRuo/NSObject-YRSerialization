@@ -41,9 +41,17 @@
     [demoSubModel2 setDemoSubString:@"this is demoSubModel2 with id property"];
     [demoModel setDemoSubModel2:demoSubModel2];//set the id property of DemoModel
     
+    TestStruct t;//custom struct
+    t.a=10;
+    t.b=@"eat";
+    demoModel.t=t;
+    
+    demoModel.frame=(CGRect){1,12.5,.3f,5};
+    demoModel.select=true;
     NSDictionary *savedDicationary=[demoModel savePropertiesToDictionary];//easy to save
+    [savedDicationary writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/testSave"] atomically:true];
     //see the console
-    NSLog(@"-->>the savedDicationary=%@",savedDicationary);//you can use this dictionary to json or...
+    NSLog(@"-->>the savedDicationary=%@,\n",savedDicationary);//you can use this dictionary to json or...
     //----------------------------
     //-end-- testSave
     //---------------------------
@@ -58,6 +66,19 @@
     //-end-- testRestore
     //---------------------------
     
+    
+    //******************************
+    //*-begin-- testNSKeyedArchiver
+    //******************************
+    //  you can check it.
+    [NSKeyedArchiver archiveRootObject:demoModel toFile:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/testNSKeyedArchiver"]];
+    id unarchive=[NSKeyedUnarchiver unarchiveObjectWithFile:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/testNSKeyedArchiver"]];
+    NSLog(@"-->>the unarchiveDemoMode=%@\nthe unarchiveDemoMode dictionary=%@",unarchive,[unarchive savePropertiesToDictionary]);//you can make a breakpoint to see the property.
+    //----------------------------
+    //-end-- testNSKeyedArchiver
+    //---------------------------
+    
+     NSLog(@"-->>the unarchiveDemoMode=%@",[demoModel savePropertiesWithoutAuxiliaryClassName]);
     return YES;
 }
 

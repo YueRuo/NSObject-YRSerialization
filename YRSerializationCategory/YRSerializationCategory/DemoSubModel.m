@@ -10,4 +10,7 @@
 
 @implementation DemoSubModel
 
+-(NSDictionary *)propertyKeysToSaveKeys{//change the save key
+    return @{@"demoSubString":@"subs",@"f":@"rect"};
+}
 @end

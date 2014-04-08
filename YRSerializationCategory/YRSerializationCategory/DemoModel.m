@@ -7,7 +7,17 @@
 //
 
 #import "DemoModel.h"
+#import "NSObject+YRSerializationCategory.h"
 
 @implementation DemoModel
-
+-(NSDictionary *)savePropertiesToDictionary{
+    NSMutableDictionary *d=[super savePropertiesToDictionary];
+    [d setObject:_t.b forKey:@"testt"];
+    return d;
+}
+-(BOOL)restorePropertiesFromDictionary:(NSDictionary *)dictionary{
+    [super restorePropertiesFromDictionary:dictionary];
+    _t.b=[dictionary objectForKey:@"testt"];
+    return true;
+}
 @end
