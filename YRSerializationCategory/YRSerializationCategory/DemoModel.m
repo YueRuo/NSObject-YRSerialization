@@ -20,4 +20,9 @@
     _t.b=[dictionary objectForKey:@"testt"];
     return true;
 }
+
+
+//+(NSDictionary *)auxiliaryYRClassNameDictionary{
+//    return @{@"demoSubModel2":@"DemoSubModel"};
+//}
 @end

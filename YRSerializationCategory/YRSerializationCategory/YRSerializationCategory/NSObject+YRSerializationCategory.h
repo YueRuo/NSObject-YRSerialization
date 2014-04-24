@@ -40,7 +40,16 @@
  *
  *	@return	true means ok，false means can't support，default value is true
  */
--(BOOL)supportYRSerialization;
++(BOOL)supportYRSerialization;
+
+/*!
+ *	@brief	abstract method，help restore the dictionary to property custom class with class name,normally your custom class need ,or id type need;
+ *
+ *	@return	{propertyName:customClassName}
+ *  @note not support C Struct，only work for NSObject class name
+ */
++(NSDictionary*)auxiliaryYRClassNameDictionary;
+
 
 /*!
  *	@brief	abstract method，let you change the key to save ,or remove some key,useful for server data

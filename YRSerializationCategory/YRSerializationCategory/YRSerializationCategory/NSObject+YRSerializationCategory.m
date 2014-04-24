@@ -41,8 +41,11 @@ static char *assoKeyProperty="__yrakp";
 @implementation NSObject (YRSerializationCategory)
 
 
--(BOOL)supportYRSerialization{
++(BOOL)supportYRSerialization{
     return true;
+}
++(NSDictionary*)auxiliaryYRClassNameDictionary{
+    return nil;
 }
 
 -(NSArray*)propertyKeys{
@@ -51,6 +54,7 @@ static char *assoKeyProperty="__yrakp";
         unsigned int outCount;
         objc_property_t *properties = class_copyPropertyList([self class], &outCount);
         NSMutableArray *propertyKeys = [NSMutableArray arrayWithCapacity:outCount];
+        
         for (int i = 0; i < outCount; i++) {
             objc_property_t property = properties[i];
             NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
@@ -117,7 +121,7 @@ static char *assoKeyProperty="__yrakp";
 
 #pragma mark transfer
 -(id)objectToSafeSave:(id)object{
-    if (![self supportYRSerialization]) {
+    if (![[self class] supportYRSerialization]) {
 #if DEBUG
         NSAssert(false, @"YRSerializationCategory: the class %@ can't support the YRSerializationCategory ,because the developer of this class forbid it",[self class]);
 #endif
@@ -144,11 +148,25 @@ static char *assoKeyProperty="__yrakp";
 }
 
 -(id)objectToSafeRestore:(id)object{
+    return [self objectToSafeRestore:object propertyName:nil];
+}
+-(id)objectToSafeRestore:(id)object propertyName:(NSString*)propertyName{
     id resultObj=nil;
     if ([object isKindOfClass:[NSArray class]]) {
         resultObj=[self restoreObjectsFromArray:object];
     }else if ([object isKindOfClass:[NSDictionary class]]){
-        resultObj=[self restoreObjectsFromDictionary:object];
+        NSString *propertyClassName=nil;
+        if (propertyName) {
+            NSDictionary *propertyClassNameDictionary=[[self class]auxiliaryYRClassNameDictionary];
+            propertyClassName=[propertyClassNameDictionary objectForKey:propertyName];
+        }
+        if (propertyClassName) {
+            Class className=NSClassFromString(propertyClassName);
+            resultObj=[[className alloc]init];
+            [resultObj restorePropertiesFromDictionary:object class:className];
+        }else{
+            resultObj=[self restoreObjectsFromDictionary:object];
+        }
     }else if ([object isKindOfClass:[NSSet class]]){
         resultObj=[self restoreObjectsFromSet:object];
     }else if ([object isKindOfClass:[NSString class]]){
@@ -325,7 +343,7 @@ static char *assoKeyProperty="__yrakp";
     return nil;
 }
 -(BOOL)restorePropertiesFromDictionary:(NSDictionary*)dictionary class:(Class)class{
-    if (![self supportYRSerialization]) {
+    if (![class supportYRSerialization]) {
 #if DEBUG
         NSAssert(false, @"YRSerializationCategory: the class %@ can't support the YRSerializationCategory ,because the developer of this class forbid it",[self class]);
 #endif
@@ -356,7 +374,7 @@ static char *assoKeyProperty="__yrakp";
         if (ret) {
             id propertyValue = [dictionary valueForKey:saveKey];
             if (propertyValue) {
-                id safeObj=[self objectToSafeRestore:propertyValue];
+                id safeObj=[self objectToSafeRestore:propertyValue propertyName:propertyName];
                 if (safeObj) {
                     [self setValue:safeObj forKey:propertyName];
                 }
