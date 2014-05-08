@@ -21,6 +21,7 @@ typedef struct {
 @property (retain,nonatomic) NSDictionary *demoDictionary;
 @property (retain,nonatomic) DemoSubModel *demoSubModel;//another class
 
+
 //supported struct
 @property (assign,nonatomic) CGRect frame;
 @property (assign,nonatomic) CGSize size;

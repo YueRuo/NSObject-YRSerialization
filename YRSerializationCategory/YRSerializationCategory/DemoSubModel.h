@@ -11,4 +11,8 @@
 
 @interface DemoSubModel : NSObject
 @property (retain,nonatomic) NSString *demoSubString;
+@property (retain,nonatomic) NSData *data;
+@property (retain,nonatomic) NSDate *date;
+@property (assign,nonatomic) char m;
+//@property (assign,nonatomic) char *s;
 @end

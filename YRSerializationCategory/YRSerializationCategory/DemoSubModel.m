@@ -10,7 +10,10 @@
 
 @implementation DemoSubModel
 
--(NSDictionary *)propertyKeysToSaveKeys{//change the save key
-    return @{@"demoSubString":@"subs",@"f":@"rect"};
+//-(NSDictionary *)propertyKeysToSaveKeys{//change the save key
+//    return @{@"demoSubString":@"subs",@"f":@"rect",@"date":@"de"};
+//}
++(NSDictionary *)auxiliaryYRClassNameDictionary{
+    return @{@"date":@"NSDate"};
 }
 @end

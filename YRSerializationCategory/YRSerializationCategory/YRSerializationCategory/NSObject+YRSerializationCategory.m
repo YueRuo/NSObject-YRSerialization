@@ -34,6 +34,7 @@
 #define YRSerializationClassNamekey @"__yrcn"
 #define YRSerializationStructNamekey @"__yrsn"
 #define YRSerializationStructValuekey @"__yrsv"
+#define YRSerializationDateNamekey @"__yrde"
 #define YRSerializationNSCodingKey  @"coder"
 
 static char *assoKeyProperty="__yrakp";
@@ -75,7 +76,7 @@ static char *assoKeyProperty="__yrakp";
     return propertyKeysC;
 }
 -(NSMutableDictionary*)savePropertiesToDictionary{
-    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
+    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]||[self isKindOfClass:[NSDate class]]||[self isKindOfClass:[NSData class]]) {
         NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
         return nil;
     }
@@ -100,20 +101,18 @@ static char *assoKeyProperty="__yrakp";
 
 #pragma NSCoding
 -(void)encodeWithCoder:(NSCoder *)aCoder{
-    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
-        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
+    id result= [self savePropertiesToDictionary];
+    if (!result) {
+        result=[self objectToSafeSave:self];
     }
-    NSDictionary *dictionary=[self savePropertiesToDictionary];
-    if (dictionary) {
-        [aCoder encodeObject:dictionary forKey:YRSerializationNSCodingKey];
+    if (result) {
+        [aCoder encodeObject:result forKey:YRSerializationNSCodingKey];
     }
 }
 -(id)initWithCoder:(NSCoder *)aDecoder{
-    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
-        NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
-    }
-    NSDictionary *dictionary=[aDecoder decodeObjectForKey:YRSerializationNSCodingKey];
-    [self restorePropertiesFromDictionary:dictionary];
+    id object=[aDecoder decodeObjectForKey:YRSerializationNSCodingKey];
+    [self restorePropertiesFromDictionary:object];
+//    [self restoreObjectFromSafeSave:object];
     return self;
 }
 
@@ -141,6 +140,8 @@ static char *assoKeyProperty="__yrakp";
         resultObj=[self saveObjectsFromValue:object];
     }else if ([object isKindOfClass:[NSNull class]]){
         resultObj=object;
+    }else if ([object isKindOfClass:[NSDate class]]){
+        resultObj=[self saveObjectsFromDate:object];
     }else{
         resultObj=[object saveObjectPropertiesToDictionary];
     }
@@ -160,11 +161,18 @@ static char *assoKeyProperty="__yrakp";
             NSDictionary *propertyClassNameDictionary=[[self class]auxiliaryYRClassNameDictionary];
             propertyClassName=[propertyClassNameDictionary objectForKey:propertyName];
         }
+        BOOL directRestore=true;
         if (propertyClassName) {
             Class className=NSClassFromString(propertyClassName);
-            resultObj=[[className alloc]init];
-            [resultObj restorePropertiesFromDictionary:object class:className];
-        }else{
+            if ([className isSubclassOfClass:[NSDate class]]) {//无须重新new的类
+                directRestore=true;
+            }
+            if (!directRestore) {
+                resultObj=[[className alloc]init];
+                [resultObj restorePropertiesFromDictionary:object class:className];
+            }
+        }
+        if (directRestore) {
             resultObj=[self restoreObjectsFromDictionary:object];
         }
     }else if ([object isKindOfClass:[NSSet class]]){
@@ -229,22 +237,33 @@ static char *assoKeyProperty="__yrakp";
 -(id)saveObjectsFromValue:(NSValue*)value{
     if (value&&[value isKindOfClass:[NSValue class]]) {
         NSString *objcTypeString=[NSString stringWithCString:[value objCType] encoding:NSUTF8StringEncoding];
-        if ([objcTypeString length]==1) {//系统能直接识别
+        NSLog(@"objcTypeString=%@",objcTypeString);
+        if ([objcTypeString length]==1) {//系统基本上能直接识别
             return value;
-        }else{//复杂且麻烦的结构体
+        }else if([objcTypeString hasPrefix:@"{"]&&[objcTypeString hasSuffix:@"}"]){//复杂且麻烦的结构体
             NSString *resultString=[value description];
             if (!resultString||[resultString hasPrefix:@"<"]) {
                 NSLog(@"--->>warning! find a unknow struct to save! ignored this value ,value=%@",value);
                 return nil;
             }
             return @{YRSerializationStructNamekey:@1,YRSerializationStructValuekey:resultString};
+        }else{
+            return value;
         }
         
     }
     return value;
 }
+-(id)saveObjectsFromDate:(NSDate*)date{
+    if (date&&[date isKindOfClass:[NSDate class]]) {
+        NSTimeInterval time=[date timeIntervalSince1970];
+        return @{YRSerializationDateNamekey:[NSNumber numberWithDouble:time]};
+    }
+    return nil;
+}
+
 -(NSMutableDictionary*)saveObjectPropertiesToDictionary{
-    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]) {
+    if ([self isKindOfClass:[NSDictionary class]]||[self isKindOfClass:[NSArray class]]||[self isKindOfClass:[NSValue class]]||[self isKindOfClass:[NSString class]]||[self isKindOfClass:[NSSet class]]||[self isKindOfClass:[NSDate class]]||[self isKindOfClass:[NSData class]]) {
 #if DEBUG
         NSLog(@"warning : the class %@ can not use this method !please check and use your custom class",[self class]);
 #endif
@@ -329,15 +348,20 @@ static char *assoKeyProperty="__yrakp";
         [classObj restorePropertiesFromDictionary:dictionary class:className];
         return classObj;
     }else{
-        NSString *structName=[dictionary objectForKey:YRSerializationStructNamekey];
-        if (structName) {
-            return [self restoreObjectsFromValueDescriptionString:[dictionary objectForKey:YRSerializationStructValuekey]];
+        NSNumber *timeNumber=[dictionary objectForKey:YRSerializationDateNamekey];
+        if (timeNumber) {
+            return [NSDate dateWithTimeIntervalSince1970:[timeNumber doubleValue]];
         }else{
-            __block NSMutableDictionary *resultDictionary=[NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
-            [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                [resultDictionary setObject:[self objectToSafeRestore:obj] forKey:key];
-            }];
-            return resultDictionary;
+            NSString *structName=[dictionary objectForKey:YRSerializationStructNamekey];
+            if (structName) {
+                return [self restoreObjectsFromValueDescriptionString:[dictionary objectForKey:YRSerializationStructValuekey]];
+            }else{
+                __block NSMutableDictionary *resultDictionary=[NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
+                [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                    [resultDictionary setObject:[self objectToSafeRestore:obj] forKey:key];
+                }];
+                return resultDictionary;
+            }
         }
     }
     return nil;
