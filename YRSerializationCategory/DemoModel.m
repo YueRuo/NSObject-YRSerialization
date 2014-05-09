@@ -7,7 +7,7 @@
 //
 
 #import "DemoModel.h"
-#import "NSObject+YRSerializationCategory.h"
+#import "NSObject+YRSerialization.h"
 
 @implementation DemoModel
 -(NSDictionary *)savePropertiesToDictionary{

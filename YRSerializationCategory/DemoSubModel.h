@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NSObject+YRSerializationCategory.h"
+#import "NSObject+YRSerialization.h"
 
 @interface DemoSubModel : NSObject
 @property (retain,nonatomic) NSString *demoSubString;

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5F6005D1180445B100A4778C /* NSObject+YRSerializationCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6005D0180445B100A4778C /* NSObject+YRSerializationCategory.m */; };
+		5F6005D1180445B100A4778C /* NSObject+YRSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6005D0180445B100A4778C /* NSObject+YRSerialization.m */; };
 		5F6005D418044B2A00A4778C /* DemoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6005D318044B2A00A4778C /* DemoModel.m */; };
 		5F6005D718044B6F00A4778C /* DemoSubModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6005D618044B6F00A4778C /* DemoSubModel.m */; };
 		5FCE506A180445420092F7C2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FCE5069180445420092F7C2 /* UIKit.framework */; };
@@ -22,8 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5F6005CF180445B100A4778C /* NSObject+YRSerializationCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+YRSerializationCategory.h"; sourceTree = "<group>"; };
-		5F6005D0180445B100A4778C /* NSObject+YRSerializationCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+YRSerializationCategory.m"; sourceTree = "<group>"; };
+		5F6005CF180445B100A4778C /* NSObject+YRSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+YRSerialization.h"; sourceTree = "<group>"; };
+		5F6005D0180445B100A4778C /* NSObject+YRSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+YRSerialization.m"; sourceTree = "<group>"; };
 		5F6005D218044B2A00A4778C /* DemoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoModel.h; sourceTree = "<group>"; };
 		5F6005D318044B2A00A4778C /* DemoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoModel.m; sourceTree = "<group>"; };
 		5F6005D518044B6F00A4778C /* DemoSubModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoSubModel.h; sourceTree = "<group>"; };
@@ -60,8 +60,8 @@
 		5F6005CE180445B100A4778C /* YRSerializationCategory */ = {
 			isa = PBXGroup;
 			children = (
-				5F6005CF180445B100A4778C /* NSObject+YRSerializationCategory.h */,
-				5F6005D0180445B100A4778C /* NSObject+YRSerializationCategory.m */,
+				5F6005CF180445B100A4778C /* NSObject+YRSerialization.h */,
+				5F6005D0180445B100A4778C /* NSObject+YRSerialization.m */,
 			);
 			path = YRSerializationCategory;
 			sourceTree = "<group>";
@@ -189,7 +189,7 @@
 			files = (
 				5F6005D718044B6F00A4778C /* DemoSubModel.m in Sources */,
 				5F6005D418044B2A00A4778C /* DemoModel.m in Sources */,
-				5F6005D1180445B100A4778C /* NSObject+YRSerializationCategory.m in Sources */,
+				5F6005D1180445B100A4778C /* NSObject+YRSerialization.m in Sources */,
 				5FCE5076180445420092F7C2 /* main.m in Sources */,
 				5FCE507A180445420092F7C2 /* AppDelegate.m in Sources */,
 			);

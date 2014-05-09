@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #import "DemoModel.h"
-#import "NSObject+YRSerializationCategory.h"
+#import "NSObject+YRSerialization.h"
 
 @implementation AppDelegate
 
