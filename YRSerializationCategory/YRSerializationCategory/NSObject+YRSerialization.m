@@ -237,7 +237,7 @@ static char *assoKeyProperty="__yrakp";
 -(id)saveObjectsFromValue:(NSValue*)value{
     if (value&&[value isKindOfClass:[NSValue class]]) {
         NSString *objcTypeString=[NSString stringWithCString:[value objCType] encoding:NSUTF8StringEncoding];
-        NSLog(@"objcTypeString=%@",objcTypeString);
+//        NSLog(@"objcTypeString=%@",objcTypeString);
         if ([objcTypeString length]==1) {//系统基本上能直接识别
             return value;
         }else if([objcTypeString hasPrefix:@"{"]&&[objcTypeString hasSuffix:@"}"]){//复杂且麻烦的结构体
